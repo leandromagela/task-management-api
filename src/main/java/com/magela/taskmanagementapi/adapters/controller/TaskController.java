@@ -47,7 +47,7 @@ public class TaskController {
         return ResponseEntity.ok(updateTaskUseCase.execute(task));
     }
 
-    @GetMapping
+    @GetMapping("/pending")
     public ResponseEntity<List<Task>> getPendingTasks(@RequestParam Long userId) {
         return ResponseEntity.ok(getPendingTasksUseCase.execute(userId));
     }

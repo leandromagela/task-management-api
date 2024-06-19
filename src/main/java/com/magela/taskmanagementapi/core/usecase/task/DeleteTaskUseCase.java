@@ -1,7 +1,9 @@
 package com.magela.taskmanagementapi.core.usecase.task;
 
 import com.magela.taskmanagementapi.core.repository.TaskRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class DeleteTaskUseCase {
 
     private final TaskRepository taskRepository;

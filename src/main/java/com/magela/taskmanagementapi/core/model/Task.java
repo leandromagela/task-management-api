@@ -1,27 +1,32 @@
 package com.magela.taskmanagementapi.core.model;
 
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 
+//@Table(name = "tasks")
+//@Entity(name = "tasks")
+@Entity
 @Setter
 @Getter
+//@EqualsAndHashCode(of = "id")
 public class Task {
 
-    @Getter
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotEmpty(message = "Description is required")
     private String description;
 
-    @NotEmpty(message = "Priority is required")
+    //@NotEmpty(message = "Priority is required")
     private String priority;
 
-    @Getter
     private boolean completed;
 
-    @Getter
     private Long userId;
 
     public Task() {
@@ -55,4 +60,5 @@ public class Task {
                 ", userId=" + userId +
                 '}';
     }
+
 }

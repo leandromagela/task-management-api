@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class TaskRepositoryImpl implements TaskRepository {
+public abstract class TaskRepositoryImpl implements TaskRepository {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -19,31 +19,6 @@ public class TaskRepositoryImpl implements TaskRepository {
     public void deleteById(Long taskId) {
         String sql = "DELETE FROM tasks WHERE id = ?";
         jdbcTemplate.update(sql, taskId);
-    }
-
-    @Override
-    public void delete(Task entity) {
-
-    }
-
-    @Override
-    public void deleteAllById(Iterable<? extends Long> longs) {
-
-    }
-
-    @Override
-    public void deleteAll(Iterable<? extends Task> entities) {
-
-    }
-
-    @Override
-    public void deleteAll() {
-
-    }
-
-    @Override
-    public <S extends Task> Iterable<S> saveAll(Iterable<S> entities) {
-        return null;
     }
 
     @Override
@@ -56,26 +31,6 @@ public class TaskRepositoryImpl implements TaskRepository {
                 rs.getBoolean("completed"),
                 rs.getLong("user_id")
         )));
-    }
-
-    @Override
-    public boolean existsById(Long aLong) {
-        return false;
-    }
-
-    @Override
-    public Iterable<Task> findAll() {
-        return null;
-    }
-
-    @Override
-    public Iterable<Task> findAllById(Iterable<Long> longs) {
-        return null;
-    }
-
-    @Override
-    public long count() {
-        return 0;
     }
 
     @Override
@@ -103,18 +58,11 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
-    public void save(Optional<Task> task) {
-        //
-    }
-
-    @Override
     public Task save(Task task) {
         if (task.getId() == null) {
-            // Inserir nova tarefa
             String insertSql = "INSERT INTO tasks (description, priority, completed, user_id) VALUES (?, ?, ?, ?)";
             jdbcTemplate.update(insertSql, task.getDescription(), task.getPriority(), task.isCompleted(), task.getUserId());
 
-            // Recuperar a tarefa recém-inserida para obter o ID
             String selectSql = "SELECT * FROM tasks WHERE description = ? AND priority = ? AND completed = ? AND user_id = ? ORDER BY id DESC LIMIT 1";
             Task insertedTask = jdbcTemplate.queryForObject(selectSql, new Object[]{
                     task.getDescription(), task.getPriority(), task.isCompleted(), task.getUserId()
@@ -128,10 +76,55 @@ public class TaskRepositoryImpl implements TaskRepository {
 
             return insertedTask;
         } else {
-            // Atualizar tarefa existente
             String updateSql = "UPDATE tasks SET description = ?, priority = ?, completed = ? WHERE id = ?";
             jdbcTemplate.update(updateSql, task.getDescription(), task.getPriority(), task.isCompleted(), task.getId());
             return task;
         }
+    }
+
+    // Métodos não implementados podem lançar exceção para evitar uso acidental
+    @Override
+    public void delete(Task entity) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public void deleteAllById(Iterable<? extends Long> longs) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public void deleteAll(Iterable<? extends Task> entities) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public void deleteAll() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public <S extends Task> List<S> saveAll(Iterable<S> entities) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public boolean existsById(Long aLong) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public List<Task> findAll() {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public List<Task> findAllById(Iterable<Long> longs) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public long count() {
+        throw new UnsupportedOperationException("Not implemented");
     }
 }

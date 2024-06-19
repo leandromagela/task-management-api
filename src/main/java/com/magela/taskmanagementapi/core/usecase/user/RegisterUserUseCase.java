@@ -5,7 +5,9 @@ import com.magela.taskmanagementapi.core.model.User;
 import com.magela.taskmanagementapi.core.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RegisterUserUseCase {
     private final UserRepository repository;
 
@@ -19,7 +21,7 @@ public class RegisterUserUseCase {
         }
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
-        User newUser = new User(data.login(), encryptedPassword, data.role());
+        User newUser = new User(data.name(), data.login(), encryptedPassword, data.role());
         repository.save(newUser);
     }
 }

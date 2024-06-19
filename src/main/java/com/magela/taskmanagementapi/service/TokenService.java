@@ -5,8 +5,11 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.magela.taskmanagementapi.core.model.User;
+import com.magela.taskmanagementapi.infrastructure.config.JwtConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -17,13 +20,21 @@ public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
 
+    private final JwtConfig jwtConfig;
+
+    public TokenService(JwtConfig jwtConfig) {
+        this.jwtConfig = jwtConfig;
+    }
+
     public String generateToken(User user){
         try{
+            Date now = new Date();
+            Date expiryDate = new Date(now.getTime() + (long) jwtConfig.getExpirationInMinutes() * 60 * 1000);
             Algorithm algorithm = Algorithm.HMAC256(secret);
             String token = JWT.create()
                     .withIssuer("auth-api")
                     .withSubject(user.getLogin())
-                    .withExpiresAt(genExpirationDate())
+                    .withExpiresAt(expiryDate)
                     .sign(algorithm);
             return token;
         } catch (JWTCreationException exception) {

@@ -2,7 +2,9 @@ package com.magela.taskmanagementapi.core.usecase.task;
 
 import com.magela.taskmanagementapi.core.model.Task;
 import com.magela.taskmanagementapi.core.repository.TaskRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UpdateTaskUseCase {
 
     private final TaskRepository taskRepository;

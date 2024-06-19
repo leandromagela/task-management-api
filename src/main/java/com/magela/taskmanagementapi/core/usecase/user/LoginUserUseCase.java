@@ -6,7 +6,9 @@ import com.magela.taskmanagementapi.core.model.User;
 import com.magela.taskmanagementapi.service.TokenService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.stereotype.Service;
 
+@Service
 public class LoginUserUseCase {
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
