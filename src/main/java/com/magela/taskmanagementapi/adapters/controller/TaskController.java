@@ -6,58 +6,69 @@ import com.magela.taskmanagementapi.core.usecase.task.DeleteTaskUseCase;
 import com.magela.taskmanagementapi.core.usecase.task.GetPendingTasksUseCase;
 import com.magela.taskmanagementapi.core.usecase.task.UpdateTaskUseCase;
 import com.magela.taskmanagementapi.core.usecase.task.CompleteTaskUseCase;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
 
-    @Autowired
-    private CreateTaskUseCase createTaskUseCase;
+    private final CreateTaskUseCase createTaskUseCase;
+    private final DeleteTaskUseCase deleteTaskUseCase;
+    private final GetPendingTasksUseCase getPendingTasksUseCase;
+    private final UpdateTaskUseCase updateTaskUseCase;
+    private final CompleteTaskUseCase completeTaskUseCase;
 
     @Autowired
-    private DeleteTaskUseCase deleteTaskUseCase;
-
-    @Autowired
-    private GetPendingTasksUseCase getPendingTasksUseCase;
-
-    @Autowired
-    private UpdateTaskUseCase updateTaskUseCase;
-
-    @Autowired
-    private CompleteTaskUseCase completeTaskUseCase;
+    public TaskController(CreateTaskUseCase createTaskUseCase, DeleteTaskUseCase deleteTaskUseCase,
+                          GetPendingTasksUseCase getPendingTasksUseCase, UpdateTaskUseCase updateTaskUseCase,
+                          CompleteTaskUseCase completeTaskUseCase) {
+        this.createTaskUseCase = createTaskUseCase;
+        this.deleteTaskUseCase = deleteTaskUseCase;
+        this.getPendingTasksUseCase = getPendingTasksUseCase;
+        this.updateTaskUseCase = updateTaskUseCase;
+        this.completeTaskUseCase = completeTaskUseCase;
+    }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        return ResponseEntity.ok(createTaskUseCase.execute(task));
+    @Operation(summary = "Create a new task")
+    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Task createdTask = createTaskUseCase.execute(task);
+        return ResponseEntity.ok(createdTask);
     }
 
     @DeleteMapping("/{taskId}")
+    @Operation(summary = "Delete a task by ID")
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
         deleteTaskUseCase.execute(taskId);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping
-    public ResponseEntity<Task> updateTask(@RequestBody Task task) {
-        return ResponseEntity.ok(updateTaskUseCase.execute(task));
+    @Operation(summary = "Update a task")
+    public ResponseEntity<Task> updateTask(@Valid @RequestBody Task task) {
+        Task updatedTask = updateTaskUseCase.execute(task);
+        return ResponseEntity.ok(updatedTask);
     }
 
     @GetMapping("/pending")
-    public ResponseEntity<List<Task>> getPendingTasks(@RequestParam Long userId) {
-        return ResponseEntity.ok(getPendingTasksUseCase.execute(userId));
-    }
-
-    @GetMapping("/priority")
-    public ResponseEntity<List<Task>> getPendingTasksByPriority(@RequestParam Long userId, @RequestParam String priority) {
-        return ResponseEntity.ok(getPendingTasksUseCase.executeByPriority(userId, priority));
+    @Operation(summary = "Get pending tasks for a user, optionally filtered by priority")
+    public ResponseEntity<List<Task>> getPendingTasks(@RequestParam(required = false) String priority) {
+        List<Task> pendingTasks = getPendingTasksUseCase.execute(priority);
+        return ResponseEntity.ok(pendingTasks);
     }
 
     @PatchMapping("/{taskId}/complete")
+    @Operation(summary = "Mark a task as completed")
     public ResponseEntity<Void> completeTask(@PathVariable Long taskId) {
         completeTaskUseCase.execute(taskId);
         return ResponseEntity.noContent().build();
