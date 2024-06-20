@@ -1,4 +1,4 @@
-package com.magela.task_management_api.adapters.gateway;
+package com.magela.taskmanagementapi.adapters.gateway;
 
 public class UserRepositoryImpl {
 }
